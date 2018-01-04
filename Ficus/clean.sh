@@ -1,2 +1,2 @@
-rm -r dist/
-rm -r .iso/
+rm -rf dist/
+rm -rf .iso/
