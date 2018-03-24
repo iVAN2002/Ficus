@@ -114,14 +114,57 @@ void terminal_putchar(char c)
 	}
 }
 
+void fillchar(uint16_t c, uint16_t *str[])
+{
+	int l = sizeof(str) / sizeof(uint16_t *);
+
+	for (int i = 0; i < l; i++)
+	{
+		str[i] = &c;
+	}
+}
+
+void terminal_newline(void)
+{
+	if ((terminal_row + 1) == VGA_HEIGHT)
+	{
+		uint16_t *temp_line[VGA_WIDTH];
+
+		for (size_t y = 1; y < VGA_HEIGHT; y++)
+		{
+			// Очищаем временную строку
+			fillchar(vga_entry('\0', terminal_color), temp_line);
+
+			// Читаем строку на экране
+			for (size_t x = 0; x < VGA_WIDTH; x++)
+			{
+				const size_t i1 = VGA_WIDTH * y + x;
+				const size_t i2 = VGA_WIDTH * (y - 1) + x;
+				terminal_buffer[i2] = terminal_buffer[i1];
+			}
+		}
+
+		// Очищаем последнюю строку
+		for (size_t x = 0; x < VGA_WIDTH; x++)
+		{
+			const size_t index = (VGA_HEIGHT - 1) * VGA_WIDTH + x;
+			terminal_buffer[index] = vga_entry('\0', terminal_color);
+		}
+	}
+	else
+	{
+		terminal_row++;
+	}
+	terminal_column = 0;
+}
+
 void terminal_write(const char *data, size_t size)
 {
 	for (size_t i = 0; i < size; i++)
 	{
 		if (data[i] == '\n')
 		{
-			terminal_row++;
-			terminal_column = 0;
+			terminal_newline();
 		}
 		else
 		{
@@ -144,5 +187,10 @@ extern "C" /* Use C linkage for kernel_main. */
 	/* Initialize terminal interface */
 	terminal_initialize();
 
-	terminal_writestring("Hello, kernel World!\nTest!");
+	terminal_writestring("Hello, kernel World!\n");
+	for (int i = 0; i < 24; i++)
+	{
+		terminal_writestring("Test!\n");
+	}
+	terminal_writestring("Ayy lmao!\n");
 }
