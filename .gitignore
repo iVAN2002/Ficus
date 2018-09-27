@@ -1,3 +1,4 @@
+### Other ###
 toolchain/
 dist/
 .iso/
@@ -9,3 +10,31 @@ dist/
 !.vscode/launch.json
 !.vscode/extensions.json
 .history
+
+### C and C++ ###
+*.d
+
+*.o
+*.ko
+*.obj
+*.elf
+
+*.ilk
+*.map
+*.exp
+
+*.lib
+*.a
+*.la
+*.lo
+
+*.gch
+*.pch
+
+*.dll
+*.so
+*.so.*
+*.dylib
+
+*.slo
+*.lai
