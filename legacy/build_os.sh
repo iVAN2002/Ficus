@@ -44,6 +44,6 @@ fi
 
 $CC --version
 
-$AS $ASFLAGS
-$CC $CFLAGS
-$CC $CFLAGS_LINK
+echo $AS $ASFLAGS
+echo $CC $CFLAGS
+echo $CC $CFLAGS_LINK
