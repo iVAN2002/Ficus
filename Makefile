@@ -11,7 +11,10 @@ ASFLAGS	= -assemble -triple=i686-elf -x86-asm-syntax=att -filetype=obj
 ASM_SRC = $(wildcard kernel/*.s boot/*.s)
 CXX_SRC = $(wildcard kernel/*.cpp)
 
-dist/%_asm.o: $(ASM_SRC)
+CRTBEGIN := $(shell $(CC) --print-file-name=crtbegin.o -m32)
+CRTEND 	 := $(shell $(CC) --print-file-name=crtend.o -m32)
+
+dist/%_asm.o: boot/%.s
 	mkdir -p dist
 	$(AS) $(ASFLAGS) $< -o $@
 
@@ -19,8 +22,8 @@ dist/%.o: $(CXX_SRC)
 	mkdir -p dist
 	$(CC) $(CFLAGS) $< -o $@
 
-dist/ficus.bin: dist/boot_asm.o dist/kernel.o
-	$(CC) $(LDFLAGS) $^ -o $@
+dist/ficus.bin: dist/crti_asm.o dist/boot_asm.o dist/kernel.o dist/crtn_asm.o
+	$(CC) $(LDFLAGS) $(CRTBEGIN) $^ $(CRTEND) -o $@
 
 iso: dist/ficus.bin
 	mkdir -p .iso/boot/grub
