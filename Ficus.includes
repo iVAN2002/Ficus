@@ -2,3 +2,5 @@ libc/include
 libc/include/kernel
 .
 libc
+boot
+kernel

@@ -1,8 +1,12 @@
+.gitignore
+boot/Makefile
+kernel/Makefile
+kernel/boot.s
+kernel/crti.s
+kernel/crtn.s
+rules.make
 Makefile
 README.md
-boot/boot.s
-boot/crti.s
-boot/crtn.s
 grub.cfg
 kernel/kernel.cpp
 libc/Makefile

@@ -1,11 +1,19 @@
-CC = clang++
-AS = llvm-mc
+ROOT = $(shell pwd)
+BUILD_DIR = $(ROOT)/build
+DIST_DIR = $(ROOT)/dist/.iso/boot
 
-LD_SCRIPT = linker.ld
-GRUB_CONF = grub.cfg
+CC  = clang
+CXX = clang++
+AS  = llvm-mc
+AR  = ar
 
-CFLAGS 	= -target i686-elf -c -Wall -Wextra -Ilibc/include
-LDFLAGS = -T $(LD_SCRIPT) -target i686-elf -Wl,--build-id=none -nostdlib -lgcc -ffreestanding -O2 -Ldist
+LD_SCRIPT = $(ROOT)/linker.ld
+GRUB_CONF = $(ROOT)/grub.cfg
+
+CINCLUDES = -I$(ROOT)/libc/include
+CLIBS = -Lbuild -lgcc
+CFLAGS 	= -target i686-elf -c -Wall -Wextra $(CINCLUDES)
+LDFLAGS = -T $(LD_SCRIPT) -target i686-elf -Wl,--build-id=none -nostdlib -ffreestanding -O2 $(CLIBS)
 ASFLAGS	= -assemble -triple=i686-elf -x86-asm-syntax=att -filetype=obj
 
 ASM_SRC = $(wildcard kernel/*.s boot/*.s)
@@ -14,36 +22,41 @@ CXX_SRC = $(wildcard kernel/*.cpp)
 CRTBEGIN := $(shell $(CC) --print-file-name=crtbegin.o -m32)
 CRTEND 	 := $(shell $(CC) --print-file-name=crtend.o -m32)
 
-all: iso
+SUBDIRS = libc kernel
 
-dist/%_asm.o: boot/%.s
-	@mkdir -p dist
-	@$(AS) $(ASFLAGS) $< -o $@
+export CC
+export CXX
+export AS
+export AR
+export LD_SCRIPT
+export CLIBS
+export STATIC
+export CFLAGS
+export LDFLAGS
+export ASFLAGS
+export ROOT
+export BUILD_DIR
 
-dist/%.o: $(CXX_SRC)
-	@mkdir -p dist
-	@$(CC) $(CFLAGS) $< -o $@
+all: subdirs
 
-dist/flibc.a:
-	@mkdir -p dist
-	$(MAKE) -C libc clean
-	$(MAKE) -C libc
-
-dist/ficus.bin: dist/crti_asm.o dist/boot_asm.o dist/kernel.o dist/crtn_asm.o
-	@$(CC) $(LDFLAGS) $(CRTBEGIN) $^ $(CRTEND) -o $@ dist/flibc.a
-
-kernel: dist/flibc.a dist/ficus.bin
+subdirs:
+	@mkdir -p $(BUILD_DIR)
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir; \
+	done
 
 iso: kernel
-	@mkdir -p .iso/boot/grub
-	@cp dist/ficus.bin .iso/boot/ficus.bin
-	@cp $(GRUB_CONF) .iso/boot/grub/grub.cfg
-	@grub-mkrescue -o dist/ficus.iso .iso
+	@mkdir -p $(DIST_DIR)/grub
+	@cp $(BUILD_DIR)/alice $(DIST_DIR)/alice
+	@cp $(GRUB_CONF) $(DIST_DIR)/grub/grub.cfg
+	@grub-mkrescue -o $(DIST_DIR)/../../ficus.iso $(DIST_DIR)/../ &> /dev/null
 
 run: iso
 	@qemu-system-i386 -cdrom dist/ficus.iso
 
 clean:
-	@rm -rf dist .iso
-	$(MAKE) -C libc clean
+	@rm -rf dist build
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir clean; \
+	done
 
