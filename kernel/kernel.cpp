@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 #include <kernel/tty.h>
-#include <string.h>
+#include <stdio.h>
 
 #if defined(__cplusplus)
 extern "C" /* Use C linkage for kernel_main. */
@@ -15,11 +15,7 @@ extern "C" /* Use C linkage for kernel_main. */
 	void
 	kernel_main(void)
 {
-	/* Initialize terminal interface */
-        
-    //const char *a = "test";
-    //size_t b = strlen(a);
 	terminal_initialize();
 
-	terminal_writestring("Hello, kernel World!\n");
+	printf("Hello, kernel World!\n");
 }

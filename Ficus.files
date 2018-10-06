@@ -9,6 +9,7 @@ libc/Makefile
 libc/include/kernel/io.h
 libc/include/kernel/tty.h
 libc/include/kernel/vga.h
+libc/include/stdio.h
 libc/include/string.h
 libc/stdio.c
 libc/string.c
