@@ -1,0 +1,14 @@
+Makefile
+README.md
+boot/boot.s
+boot/crti.s
+boot/crtn.s
+grub.cfg
+kernel/kernel.cpp
+libc/Makefile
+libc/include/kernel/tty.h
+libc/include/kernel/vga.h
+libc/include/string.h
+libc/string.c
+libc/tty.c
+linker.ld
