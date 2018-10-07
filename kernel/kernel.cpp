@@ -1,4 +1,4 @@
-#include <kernel/tty.h>
+#include <tty.h>
 #include <gdt.h>
 #include <idt.h>
 #include <stdio.h>

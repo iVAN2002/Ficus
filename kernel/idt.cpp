@@ -1,5 +1,6 @@
 #include <idt.h>
 #include <string.h>
+#include <io.h>
 
 idt_entry_t IDT::m_idt_entries[256];
 idt_ptr_t   IDT::m_idt_ptr;
@@ -28,6 +29,23 @@ extern "C"
     extern void isr18();
     extern void isr19();
     extern void isr31();
+    
+    extern void irq0();
+    extern void irq1();
+    extern void irq2();
+    extern void irq3();
+    extern void irq4();
+    extern void irq5();
+    extern void irq6();
+    extern void irq7();
+    extern void irq8();
+    extern void irq9();
+    extern void irq10();
+    extern void irq11();
+    extern void irq12();
+    extern void irq13();
+    extern void irq14();
+    extern void irq15();
 }
 
 void IDT::Init()
@@ -36,6 +54,17 @@ void IDT::Init()
     m_idt_ptr.base  = (uint32_t)&m_idt_entries;
  
     memset(&m_idt_entries, 0, sizeof(idt_entry_t)*256);
+    
+    port_writeb(0x20, 0x11);
+    port_writeb(0xA0, 0x11);
+    port_writeb(0x21, 0x20);
+    port_writeb(0xA1, 0x28);
+    port_writeb(0x21, 0x04);
+    port_writeb(0xA1, 0x02);
+    port_writeb(0x21, 0x01);
+    port_writeb(0xA1, 0x01);
+    port_writeb(0x21, 0x0);
+    port_writeb(0xA1, 0x0);
  
     _SetGate(0, (uint32_t)isr0 , 0x08, 0x8E);
     _SetGate(1, (uint32_t)isr1 , 0x08, 0x8E);
@@ -58,6 +87,22 @@ void IDT::Init()
     _SetGate(18, (uint32_t)isr18 , 0x08, 0x8E);
     _SetGate(19, (uint32_t)isr19 , 0x08, 0x8E);
     _SetGate(31, (uint32_t)isr31 , 0x08, 0x8E);
+    _SetGate(32, (uint32_t)irq0 , 0x08, 0x8E);
+    _SetGate(33, (uint32_t)irq1 , 0x08, 0x8E);
+    _SetGate(34, (uint32_t)irq2 , 0x08, 0x8E);
+    _SetGate(35, (uint32_t)irq3 , 0x08, 0x8E);
+    _SetGate(36, (uint32_t)irq4 , 0x08, 0x8E);
+    _SetGate(37, (uint32_t)irq5 , 0x08, 0x8E);
+    _SetGate(38, (uint32_t)irq6 , 0x08, 0x8E);
+    _SetGate(39, (uint32_t)irq7 , 0x08, 0x8E);
+    _SetGate(40, (uint32_t)irq8 , 0x08, 0x8E);
+    _SetGate(41, (uint32_t)irq9 , 0x08, 0x8E);
+    _SetGate(42, (uint32_t)irq10 , 0x08, 0x8E);
+    _SetGate(43, (uint32_t)irq11 , 0x08, 0x8E);
+    _SetGate(44, (uint32_t)irq12 , 0x08, 0x8E);
+    _SetGate(45, (uint32_t)irq13 , 0x08, 0x8E);
+    _SetGate(46, (uint32_t)irq14 , 0x08, 0x8E);
+    _SetGate(47, (uint32_t)irq15 , 0x08, 0x8E);
  
     idt_flush((uint32_t)&m_idt_ptr);
 }
