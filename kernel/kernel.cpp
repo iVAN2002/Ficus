@@ -1,12 +1,6 @@
-/* Surely you will remove the processor conditionals and this comment
-   appropriately depending on whether or not you use C++. */
-#if !defined(__cplusplus)
-#include <stdbool.h> /* C doesn't have booleans by default. */
-#endif
-#include <stddef.h>
-#include <stdint.h>
-
 #include <kernel/tty.h>
+#include <gdt.h>
+#include <idt.h>
 #include <stdio.h>
 
 #if defined(__cplusplus)
@@ -16,6 +10,18 @@ extern "C" /* Use C linkage for kernel_main. */
 	kernel_main(void)
 {
 	terminal_initialize();
-
-	printf("Hello, kernel World!\n");
+	
+	printf("[GDT] Initializing...");
+	
+	GDT::Init();
+	
+	printf(" Done\n");
+	
+	printf("[IDT] Initializing...");
+	
+	IDT::Init();
+	
+	printf(" Done\n");
+	
+	asm volatile ("int $0x3");
 }

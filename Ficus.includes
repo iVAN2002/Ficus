@@ -4,3 +4,4 @@ libc/include/kernel
 libc
 boot
 kernel
+kernel/include

@@ -10,10 +10,10 @@ AR  = ar
 LD_SCRIPT = $(ROOT)/linker.ld
 GRUB_CONF = $(ROOT)/grub.cfg
 
-CINCLUDES = -I$(ROOT)/libc/include
+CINCLUDES = -I$(ROOT)/libc/include -I$(ROOT)/kernel/include
 CLIBS = -Lbuild -lgcc
-CFLAGS 	= -target i686-elf -c -Wall -Wextra $(CINCLUDES)
-LDFLAGS = -T $(LD_SCRIPT) -target i686-elf -Wl,--build-id=none -nostdlib -ffreestanding -O2 $(CLIBS)
+CFLAGS 	= -target i686-elf -g -c -Wall -Wextra $(CINCLUDES)
+LDFLAGS = -T $(LD_SCRIPT) -Ttext 0x0  -target i686-elf -Wl,--build-id=none -nostdlib -ffreestanding -O2 $(CLIBS)
 ASFLAGS	= -assemble -triple=i686-elf -x86-asm-syntax=att -filetype=obj
 
 ASM_SRC = $(wildcard kernel/*.s boot/*.s)
@@ -52,7 +52,7 @@ iso: kernel
 	@grub-mkrescue -o $(DIST_DIR)/../../ficus.iso $(DIST_DIR)/../ &> /dev/null
 
 run: iso
-	@qemu-system-i386 -cdrom dist/ficus.iso
+	qemu-system-i386 -s -cdrom dist/ficus.iso
 
 clean:
 	@rm -rf dist build
